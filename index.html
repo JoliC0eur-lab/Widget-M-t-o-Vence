@@ -81,6 +81,30 @@ const emojis={
   95:"⛈️"
 };
 
-fetch("https://a
+fetch("https://api.open-meteo.com/v1/forecast?latitude=43.7089&longitude=7.1139&current_weather=true&timezone=auto")
+.then(r=>r.json())
+.then(d=>{
+    temp.textContent=Math.round(d.current_weather.temperature)+"°";
+    emoji.textContent=emojis[d.current_weather.weathercode]||"🍓";
+});
+
+/* 🖐️ Drag */
+let down=false,dx,dy;
+widget.addEventListener("mousedown",e=>{
+    down=true;
+    dx=e.clientX-widget.offsetLeft;
+    dy=e.clientY-widget.offsetTop;
+});
+document.addEventListener("mousemove",e=>{
+    if(!down) return;
+    widget.style.left=e.clientX-dx+"px";
+    widget.style.top=e.clientY-dy+"px";
+});
+document.addEventListener("mouseup",()=>down=false);
+</script>
+
+</body>
+</html>
+
 
 
