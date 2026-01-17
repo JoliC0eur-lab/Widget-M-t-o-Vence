@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Météo Vence – Carte Douce 🌦️</title>
+
+<!-- Police élégante romantique -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    background-color: #ffffff;
+    font-family: 'Playfair Display', serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 🌸 Carte */
+.weather-card {
+    position: absolute;
+    left: 50%;
+    top: 15%;
+    transform: translateX(-50%);
+    background: linear-gradient(
+        135deg,
+        #f6eee7,
+        #f8e3e8
+    ); /* beige rosé */
+    border-radius: 28px;
+    padding: 32px;
+    width: 360px;
+    height: 420px;
+    text-align: center;
+    resize: both;
+    overflow: hidden;
+    cursor: move;
+}
+
+/* Titres */
+h2 {
+    font-size: 30px;
+    letter-spacing: 2px;
+    color: #8b5e63;
+    margin-bottom: 12px;
+}
+
+/* Température */
+.temp {
+    font-size: 46px;
+    color: #a65b6a;
+}
+
+/* Emoji météo */
+.emoji {
+    font-size: 56px;
+    margin: 12px 0;
+    animation: floatEmoji 3s ease-in-out infinite;
+}
+
+@keyframes floatEmoji {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* Texte météo */
+.forecast-day {
+    margin-top: 12px;
+    font-size: 17px;
+    color: #7b5a60;
+}
+
+/* ☀️ Soleil */
+.sun {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 54px;
+    animation: spin 14s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ☁️ Nuages */
+.cloud {
+    position: absolute;
+    top: 60px;
+    font-size: 48px;
+    opacity: 0.8;
+    animation: drift 18s linear infinite;
+}
+
+.cloud:nth-child(1) { left: -80px; }
+.cloud:nth-child(2) { left: -160px; animation-delay: 6s; }
+
+@keyframes drift {
+    from { transform: translateX(0); }
+    to { transform: translateX(520px); }
+}
+
+/* 🌧️ Pluie */
+.rain {
+    position: absolute;
+    top: -20px;
+    width: 2px;
+    height: 18px;
+    background: rgba(160,180,200,0.6);
+    animation: rainFall 1s linear infinite;
+}
+
+.rain:nth-child(1) { left: 25%; }
+.rain:nth-child(2) { left: 45%; animation-delay: .2s; }
+.rain:nth-child(3) { left: 65%; animation-delay: .4s; }
+
+@keyframes rainFall {
+    to { transform: translateY(480px); }
+}
+</style>
+</head>
+<body>
+
+<div id="venceCard" class="weather-card">
+    <h2>VENCE</h2>
+    <div class="temp" id="venceTemp"></div>
+    <div class="emoji" id="venceEmoji"></div>
+    <div id="venceForecast"></div>
+
+    <div id="sun" class="sun">☀️</div>
+    <div class="cloud">☁️</div>
+    <div class="cloud">☁️</div>
+
+    <div class="rain"></div>
+    <div class="rain"></div>
+    <div class="rain"></div>
+</div>
+
+<script>
+const weatherEmojis = {
+    0:"☀️",1:"🌤️",2:"⛅",3:"☁️",
+    45:"🌫️",48:"🌫️",
+    51:"🌦️",61:"🌧️",63:"🌧️",
+    65:"🌧️",80:"🌦️",
+    95:"⛈️",99:"⛈️"
+};
+
+function loadWeather() {
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=43.7089&longitude=7.1139&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto")
+    .then(r => r.json())
+    .then(data => {
+        const cur = data.current_weather;
+        const d = data.daily;
+
+        venceTemp.textContent = Math.round(cur.temperature) + "°C";
+        venceEmoji.textContent = weatherEmojis[cur.weathercode] || "❓";
+
+        venceForecast.innerHTML =
+            `${d.time[0]} · ${Math.round(d.temperature_2m_max[0])}° / ${Math.round(d.temperature_2m_min[0])}°`;
+
+        sun.style.display = (cur.weathercode <= 1) ? "block" : "none";
+        document.querySelectorAll(".cloud").forEach(c =>
+            c.style.display = (cur.weathercode >= 2) ? "block" : "none"
+        );
+        document.querySelectorAll(".rain").forEach(r =>
+            r.style.display = (cur.weathercode >= 51) ? "block" : "none"
+        );
+    });
+}
+
+loadWeather();
+
+/* 🖐️ Drag */
+const card = document.getElementById("venceCard");
+let isDown=false,dx,dy;
+
+card.addEventListener("mousedown",e=>{
+    isDown=true;
+    dx=e.clientX-card.offsetLeft;
+    dy=e.clientY-card.offsetTop;
+});
+
+document.addEventListener("mousemove",e=>{
+    if(!isDown) return;
+    card.style.left=e.clientX-dx+"px";
+    card.style.top=e.clientY-dy+"px";
+});
+
+document.addEventListener("mouseup",()=>isDown=false);
+</script>
+
+</body>
+</html>
