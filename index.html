@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Mini Widget Vence 🌸</title>
+<title>Widget Vence 🍓</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600&display=swap" rel="stylesheet">
 
@@ -15,7 +15,7 @@ body{
     font-family:'Nunito', sans-serif;
 }
 
-/* 🌸 Mini widget */
+/* 🍓 Widget fraise */
 .widget {
     position:absolute;
     top:20%;
@@ -23,7 +23,7 @@ body{
     transform:translateX(-50%);
     width:180px;
     height:180px;
-    background:linear-gradient(135deg,#ffe4ec,#ffd1dc);
+    background:linear-gradient(135deg,#ffd6d6,#ffb3c6);
     border-radius:28px;
     padding:14px;
     text-align:center;
@@ -58,7 +58,7 @@ body{
     50%{transform:translateY(-6px)}
 }
 
-/* Description */
+/* Texte */
 .desc{
     font-size:13px;
     color:#7d3b4f;
@@ -71,7 +71,7 @@ body{
     <div class="city">VENCE</div>
     <div class="temp" id="temp"></div>
     <div class="emoji" id="emoji"></div>
-    <div class="desc" id="desc"></div>
+    <div class="desc">Aujourd’hui</div>
 </div>
 
 <script>
@@ -81,29 +81,6 @@ const emojis={
   95:"⛈️"
 };
 
-fetch("https://api.open-meteo.com/v1/forecast?latitude=43.7089&longitude=7.1139&current_weather=true&timezone=auto")
-.then(r=>r.json())
-.then(d=>{
-    temp.textContent=Math.round(d.current_weather.temperature)+"°";
-    emoji.textContent=emojis[d.current_weather.weathercode]||"🌸";
-    desc.textContent="Aujourd’hui";
-});
+fetch("https://a
 
-/* Drag */
-let down=false,dx,dy;
-widget.addEventListener("mousedown",e=>{
-    down=true;
-    dx=e.clientX-widget.offsetLeft;
-    dy=e.clientY-widget.offsetTop;
-});
-document.addEventListener("mousemove",e=>{
-    if(!down) return;
-    widget.style.left=e.clientX-dx+"px";
-    widget.style.top=e.clientY-dy+"px";
-});
-document.addEventListener("mouseup",()=>down=false);
-</script>
-
-</body>
-</html>
 
